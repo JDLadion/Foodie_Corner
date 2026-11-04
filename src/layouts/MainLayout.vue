@@ -14,6 +14,7 @@
           :label="$q.dark.isActive ? '☀️ Light Mode' : '🌙 Dark Mode'"
           @click="toggleDark"
         />
+        <q-btn flat rounded no-caps icon="logout" label="Log Out" @click="logout" />
       </q-toolbar>
     </q-header>
 
@@ -30,8 +31,15 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { Dark } from 'quasar';
+import { useRouter } from 'vue-router';
 
 const DARK_KEY = 'foodie-dark-mode';
+const router = useRouter();
+
+function logout() {
+  localStorage.removeItem('foodie-auth-token');
+  router.push('/login');
+}
 
 function toggleDark() {
   Dark.toggle();

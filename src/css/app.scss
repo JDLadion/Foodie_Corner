@@ -39,10 +39,34 @@
   height: 4rem;
   border-radius: 8px;
   object-fit: cover;
+  cursor: zoom-in;
 
   + .dish-emoji {
     display: none;
   }
+}
+
+.image-preview-card {
+  position: relative;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  overflow: hidden;
+  background: #111;
+}
+
+.image-preview {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  object-fit: contain;
+}
+
+.image-preview-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
 }
 
 .add-dish-form {

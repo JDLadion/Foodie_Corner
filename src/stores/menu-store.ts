@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { defineStore } from 'pinia';
 
 export type Category = 'Appetizer' | 'Main Course' | 'Dessert' | 'Beverage';
@@ -16,7 +17,7 @@ export interface MenuItem {
 
 export type NewMenuItem = Omit<MenuItem, 'id' | 'favorite'>;
 
-const STORAGE_KEY = 'foodie-menu-items';
+const TOKEN_KEY = 'foodie-auth-token';
 
 const emojiByCategory: Record<Category, string> = {
   Appetizer: '🥟',
@@ -25,41 +26,22 @@ const emojiByCategory: Record<Category, string> = {
   Beverage: '🥭',
 };
 
-const defaultItems: MenuItem[] = [
-  { id: 1, name: 'Chicken Adobo', category: 'Main Course', price: 150, stock: 'available', favorite: true, emoji: '🍗' },
-  { id: 2, name: 'Lumpiang Shanghai', category: 'Appetizer', price: 90, stock: 'available', favorite: false, emoji: '🥟' },
-  { id: 3, name: 'Leche Flan', category: 'Dessert', price: 60, stock: 'low', favorite: true, emoji: '🍮' },
-  { id: 4, name: 'Mango Shake', category: 'Beverage', price: 75, stock: 'available', favorite: false, emoji: '🥭' },
-  { id: 5, name: 'Sinigang na Baboy', category: 'Main Course', price: 180, stock: 'out', favorite: false, emoji: '🍲' },
-];
+function authConfig() {
+  const token = localStorage.getItem(TOKEN_KEY);
+  return token ? { headers: { Authorization: 'Bearer ' + token } } : {};
+}
 
 function normalizeItem(item: MenuItem): MenuItem {
   const emoji = typeof item.emoji === 'string' ? item.emoji.trim() : '';
-  const isImageData = emoji.startsWith('data:image/');
-
   return {
     ...item,
-    emoji: isImageData ? emoji : emoji.length > 8 ? emojiByCategory[item.category] : emoji,
+    emoji: emoji.startsWith('data:image/') || emoji.length <= 8 ? emoji : emojiByCategory[item.category],
   };
-}
-
-function load(): MenuItem[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const items = (JSON.parse(raw) as MenuItem[]).map(normalizeItem);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-      return items;
-    }
-  } catch {
-    // ignore corrupted / unavailable storage
-  }
-  return defaultItems.map((i) => ({ ...i }));
 }
 
 export const useMenuStore = defineStore('menu', {
   state: () => ({
-    items: load(),
+    items: [] as MenuItem[],
     searchQuery: '',
     selectedCategory: 'All' as 'All' | Category,
     sortBy: 'default' as SortBy,
@@ -91,41 +73,59 @@ export const useMenuStore = defineStore('menu', {
   },
 
   actions: {
-    save() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.items));
-      } catch {
-        // storage unavailable; keep working in memory
+    async loadItems() {
+      if (!localStorage.getItem(TOKEN_KEY)) {
+        this.items = [];
+        return;
       }
+
+      const response = await axios.get<MenuItem[]>('/api/menu-items', authConfig());
+      this.items = response.data.map(normalizeItem);
     },
-    addItem(data: NewMenuItem) {
-      const nextId = Math.max(0, ...this.items.map((i) => i.id)) + 1;
-      this.items.push({ ...data, id: nextId, favorite: false });
-      this.save();
+
+    async addItem(data: NewMenuItem) {
+      const response = await axios.post<MenuItem>('/api/menu-items', data, authConfig());
+      this.items.push(normalizeItem(response.data));
     },
-    removeItem(id: number) {
+
+    async removeItem(id: number) {
+      await axios.delete('/api/menu-items/' + id, authConfig());
       this.items = this.items.filter((i) => i.id !== id);
-      this.save();
     },
-    toggleFavorite(id: number) {
-      const item = this.items.find((i) => i.id === id);
-      if (item) {
-        item.favorite = !item.favorite;
-        this.save();
-      }
-    },
-    cycleStock(id: number) {
+
+    async toggleFavorite(id: number) {
       const item = this.items.find((i) => i.id === id);
       if (!item) return;
-      item.stock = item.stock === 'available' ? 'low' : item.stock === 'low' ? 'out' : 'available';
-      this.save();
+
+      const response = await axios.put<MenuItem>(
+        '/api/menu-items/' + id,
+        { ...item, favorite: !item.favorite },
+        authConfig(),
+      );
+      Object.assign(item, normalizeItem(response.data));
     },
-    updateItem(updated: MenuItem) {
+
+    async cycleStock(id: number) {
+      const item = this.items.find((i) => i.id === id);
+      if (!item) return;
+
+      const stock = item.stock === 'available' ? 'low' : item.stock === 'low' ? 'out' : 'available';
+      const response = await axios.put<MenuItem>(
+        '/api/menu-items/' + id,
+        { ...item, stock },
+        authConfig(),
+      );
+      Object.assign(item, normalizeItem(response.data));
+    },
+
+    async updateItem(updated: MenuItem) {
+      const response = await axios.put<MenuItem>(
+        '/api/menu-items/' + updated.id,
+        updated,
+        authConfig(),
+      );
       const index = this.items.findIndex((i) => i.id === updated.id);
-      if (index !== -1) {
-        this.items[index] = { ...updated };
-        this.save();
-      }
+      if (index !== -1) this.items[index] = normalizeItem(response.data);
     },
   },
 });

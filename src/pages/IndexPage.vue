@@ -135,7 +135,16 @@
             <!-- display mode -->
             <div v-else>
               <div class="row items-center justify-between">
-                <img v-if="isImage(item.emoji)" class="dish-image" :src="item.emoji" alt="Dish image" />
+                <img
+                  v-if="isImage(item.emoji)"
+                  class="dish-image"
+                  :src="item.emoji"
+                  alt="Dish image"
+                  role="button"
+                  tabindex="0"
+                  @click="openImage(item.emoji)"
+                  @keydown.enter="openImage(item.emoji)"
+                />
                 <span class="dish-emoji">{{ item.emoji || '🍲' }}</span>
                 <div>
                   <q-btn flat round dense icon="edit" @click="startEdit(item)">
@@ -173,15 +182,36 @@
         😕 No dishes found. Try changing your search or filters.
       </div>
     </div>
+    <q-dialog v-model="imageDialogOpen">
+      <q-card class="image-preview-card">
+        <img :src="selectedImage" class="image-preview" alt="Full dish image preview" />
+        <q-btn
+          class="image-preview-close"
+          round
+          dense
+          unelevated
+          color="dark"
+          icon="close"
+          aria-label="Close image preview"
+          @click="imageDialogOpen = false"
+        />
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 import { Notify } from 'quasar';
 import { useMenuStore, type Category, type MenuItem, type NewMenuItem } from '@/stores/menu-store';
 
 const store = useMenuStore();
+
+onMounted(() => {
+  store.loadItems().catch(() => {
+    Notify.create({ type: 'negative', message: 'Unable to load this account menu.' });
+  });
+});
 
 // ---------- Options ----------
 const categories: Category[] = ['Appetizer', 'Main Course', 'Dessert', 'Beverage'];
@@ -212,9 +242,16 @@ function emptyItem(): NewMenuItem {
 const newItem = ref<NewMenuItem>(emptyItem());
 const addDishForm = ref<{ resetValidation: () => void } | null>(null);
 const imageInput = ref<HTMLInputElement | null>(null);
+const selectedImage = ref('');
+const imageDialogOpen = ref(false);
 
 function isImage(value: string) {
   return value.startsWith('data:image/');
+}
+
+function openImage(image: string) {
+  selectedImage.value = image;
+  imageDialogOpen.value = true;
 }
 
 function loadImage(file: File | undefined) {
@@ -248,7 +285,7 @@ async function addItem() {
     Notify.create({ type: 'negative', message: 'Price must be greater than 0.' });
     return;
   }
-  store.addItem({ ...newItem.value });
+  await store.addItem({ ...newItem.value });
   Notify.create({ type: 'positive', message: `"${newItem.value.name}" added to the menu!` });
   newItem.value = emptyItem();
   if (imageInput.value) imageInput.value.value = '';
@@ -257,8 +294,8 @@ async function addItem() {
 }
 
 // ---------- Remove ----------
-function removeItem(item: MenuItem) {
-  store.removeItem(item.id);
+async function removeItem(item: MenuItem) {
+  await store.removeItem(item.id);
   Notify.create({ type: 'negative', message: `"${item.name}" removed from menu.` });
 }
 
@@ -269,13 +306,13 @@ function startEdit(item: MenuItem) {
   editForm.value = { ...item };
 }
 
-function saveEdit() {
+async function saveEdit() {
   const form = editForm.value;
   if (!form || !form.name || !form.price || form.price <= 0) {
     Notify.create({ type: 'negative', message: 'Please enter a valid name and price.' });
     return;
   }
-  store.updateItem(form);
+  await store.updateItem(form);
   Notify.create({ type: 'positive', message: `"${form.name}" updated.` });
   editForm.value = null;
 }
