@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # frontend (frontend)
 
 ## Install the dependencies
@@ -36,3 +37,6 @@ quasar build
 ### Customize the configuration
 
 See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-file).
+=======
+# Foodie_Corner
+>>>>>>> 1ef15716992ede599c32a093b50aaba9390e65ab
