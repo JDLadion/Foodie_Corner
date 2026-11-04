@@ -1,81 +1,59 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
-
-        <q-toolbar-title> Quasar App </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+  <q-layout view="hHh lpR fFf">
+    <q-header class="bg-gradient text-white" elevated>
+      <q-toolbar class="q-py-sm">
+        <span class="text-h4 q-mr-md">🍽️</span>
+        <q-toolbar-title>
+          <div class="text-h6">Foodie's Corner</div>
+          <div class="text-caption">Manage your restaurant's menu with ease</div>
+        </q-toolbar-title>
+        <q-btn
+          flat
+          rounded
+          no-caps
+          :label="$q.dark.isActive ? '☀️ Light Mode' : '🌙 Dark Mode'"
+          @click="toggleDark"
+        />
       </q-toolbar>
     </q-header>
-
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <q-list>
-        <q-item-label header> Essential Links </q-item-label>
-
-        <EssentialLink v-for="link in linksList" :key="link.label" v-bind="link" />
-      </q-list>
-    </q-drawer>
 
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <q-footer class="bg-transparent text-grey-7 text-center text-caption q-pa-md">
+      Made with Vue 3 + Quasar • Laravel API • Foodie's Corner
+    </q-footer>
   </q-layout>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-import EssentialLink from '@/components/EssentialLink.vue'
+<script setup lang="ts">
+import { onMounted } from 'vue';
+import { Dark } from 'quasar';
 
-const linksList = [
-  {
-    label: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev',
-  },
-  {
-    label: 'GitHub',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework',
-  },
-  {
-    label: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev',
-  },
-  {
-    label: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev',
-  },
-  {
-    label: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev',
-  },
-  {
-    label: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev',
-  },
-  {
-    label: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
-  },
-]
+const DARK_KEY = 'foodie-dark-mode';
 
-const leftDrawerOpen = ref(false)
-
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value
+function toggleDark() {
+  Dark.toggle();
+  try {
+    localStorage.setItem(DARK_KEY, String(Dark.isActive));
+  } catch {
+    // ignore
+  }
 }
+
+onMounted(() => {
+  try {
+    const saved = localStorage.getItem(DARK_KEY);
+    if (saved !== null) Dark.set(saved === 'true');
+  } catch {
+    // ignore
+  }
+});
 </script>
+
+<style lang="scss">
+.bg-gradient {
+  background: linear-gradient(135deg, #ff7e45, #ff5e5e) !important;
+}
+</style>
