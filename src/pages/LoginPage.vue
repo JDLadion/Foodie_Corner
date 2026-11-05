@@ -91,7 +91,7 @@ async function login() {
     await router.push('/menu');
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 422) {
-      errorMessage.value = error.response.data.message || 'Please check your email and password.';
+      errorMessage.value = 'Email or password is incorrect.';
     } else {
       errorMessage.value = 'Unable to connect to the Laravel server.';
     }
