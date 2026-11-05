@@ -73,9 +73,15 @@ export const useMenuStore = defineStore('menu', {
   },
 
   actions: {
+    clearItems() {
+      this.items = [];
+    },
+
     async loadItems() {
+      // Clear the previous account's in-memory menu before loading this account.
+      this.items = [];
+
       if (!localStorage.getItem(TOKEN_KEY)) {
-        this.items = [];
         return;
       }
 
