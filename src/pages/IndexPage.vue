@@ -1,10 +1,14 @@
 <template>
-  <q-page class="q-pa-lg">
+  <q-page class="menu-page q-pa-lg">
     <div class="foodie-page">
       <!-- ===== Add Item Form ===== -->
-      <q-card flat bordered class="q-mt-lg q-mb-lg">
+      <q-dialog v-model="addDialogOpen">
+        <q-card flat bordered class="add-dish-dialog">
         <q-card-section>
-          <div class="text-h6 text-primary q-mb-md">Add New Dish</div>
+          <div class="row items-center justify-between q-mb-md">
+            <div class="text-h6 text-primary">Add New Dish</div>
+            <q-btn v-close-popup flat round dense icon="close" aria-label="Close" />
+          </div>
           <q-form ref="addDishForm" class="add-dish-form" @submit.prevent="addItem">
             <div class="row q-col-gutter-md">
               <div class="col-12 col-sm-8">
@@ -65,20 +69,21 @@
             <q-btn type="submit" color="primary" no-caps label="➕ Add to Menu" />
           </q-form>
         </q-card-section>
-      </q-card>
+        </q-card>
+      </q-dialog>
 
       <!-- ===== Stats ===== -->
       <div class="row q-col-gutter-md q-mb-lg">
         <div v-for="stat in stats" :key="stat.label" class="col-6 col-md-3">
-          <q-card flat bordered class="text-center q-pa-md">
-            <div class="text-h5 text-primary text-weight-bold">{{ stat.value }}</div>
+          <q-card flat bordered class="menu-stat-card text-left q-pa-md">
             <div class="text-caption">{{ stat.label }}</div>
+            <div class="text-h5 text-weight-bold">{{ stat.value }}</div>
           </q-card>
         </div>
       </div>
 
       <!-- ===== Controls ===== -->
-      <div class="row q-col-gutter-md items-center q-mb-lg">
+      <div class="menu-controls q-mb-lg">
         <div class="col-12 col-md-4">
           <q-input v-model="store.searchQuery" outlined dense clearable label="🔍 Search dish name..." />
         </div>
@@ -99,6 +104,7 @@
         <div class="col-12 col-md-2">
           <q-checkbox v-model="store.showFavoritesOnly" label="Favorites only" />
         </div>
+        <q-btn color="positive" unelevated no-caps icon="add" label="Add dish" @click="addDialogOpen = true" />
       </div>
 
       <!-- ===== Menu Grid ===== -->
@@ -111,7 +117,7 @@
           class="menu-card"
           :class="{ favorited: item.favorite }"
         >
-          <q-card-section>
+          <q-card-section class="menu-card-content q-pa-none">
             <!-- edit mode -->
             <div v-if="editForm && editForm.id === item.id" class="q-gutter-sm">
               <q-input v-model.trim="editForm.name" outlined dense label="Dish name" />
@@ -133,8 +139,8 @@
             </div>
 
             <!-- display mode -->
-            <div v-else>
-              <div class="row items-center justify-between">
+            <div v-else class="dish-card-display">
+              <div class="dish-card-image">
                 <img
                   v-if="isImage(item.emoji)"
                   class="dish-image"
@@ -146,12 +152,13 @@
                   @keydown.enter="openImage(item.emoji)"
                 />
                 <span class="dish-emoji">{{ item.emoji || '🍲' }}</span>
-                <div>
+                <div class="dish-card-actions">
                   <q-btn flat round dense icon="edit" @click="startEdit(item)">
                     <q-tooltip>Edit this dish</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
+                    class="favorite-button"
                     round
                     dense
                     :icon="item.favorite ? 'star' : 'star_border'"
@@ -244,6 +251,7 @@ const addDishForm = ref<{ resetValidation: () => void } | null>(null);
 const imageInput = ref<HTMLInputElement | null>(null);
 const selectedImage = ref('');
 const imageDialogOpen = ref(false);
+const addDialogOpen = ref(false);
 
 function isImage(value: string) {
   return value.startsWith('data:image/');
@@ -288,6 +296,7 @@ async function addItem() {
   await store.addItem({ ...newItem.value });
   Notify.create({ type: 'positive', message: `"${newItem.value.name}" added to the menu!` });
   newItem.value = emptyItem();
+  addDialogOpen.value = false;
   if (imageInput.value) imageInput.value.value = '';
   await nextTick();
   addDishForm.value?.resetValidation();

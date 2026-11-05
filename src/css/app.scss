@@ -4,14 +4,106 @@
   margin: 0 auto;
 }
 
+.menu-page {
+  background: #f7f9f5;
+  color: #172117;
+}
+
+.body--dark .menu-page {
+  background: #121a16;
+  color: #edf4ee;
+}
+
+.add-dish-dialog {
+  width: min(680px, calc(100vw - 32px));
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.menu-controls {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto auto auto auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.menu-controls > .col-12,
+.menu-controls > .col-6 {
+  width: auto;
+  padding: 0;
+}
+
+.menu-controls .q-field {
+  min-width: 0;
+}
+
+.menu-controls .q-checkbox {
+  white-space: nowrap;
+}
+
+.menu-page .menu-stat-card {
+  min-height: 66px;
+  border: 1px solid #e2e8e1;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.menu-page .menu-stat-card .text-caption {
+  color: #637066;
+}
+
+.menu-page .menu-stat-card .text-h5 {
+  line-height: 1.15;
+  margin-top: 4px;
+}
+
+.body--dark .menu-page .menu-stat-card,
+.body--dark .menu-page .menu-card {
+  border-color: #35453b;
+  background: #1d2922;
+  color: #edf4ee;
+}
+
+.body--dark .menu-page .menu-stat-card .text-caption,
+.body--dark .menu-page .text-caption {
+  color: #b8c8bb;
+}
+
+.body--dark .menu-page .q-field--outlined .q-field__control,
+.body--dark .menu-page .q-field--outlined .q-field__control:before {
+  border-color: #526558;
+}
+
+.body--dark .menu-page .q-field__native,
+.body--dark .menu-page .q-field__input,
+.body--dark .menu-page .q-field__label,
+.body--dark .menu-page .q-field__marginal {
+  color: #edf4ee;
+}
+
+.body--dark .menu-page .q-checkbox__label {
+  color: #edf4ee;
+}
+
+.body--dark .menu-page .q-separator {
+  background: #35453b;
+}
+
+.body--dark .menu-page .dish-card-image {
+  background: #304238;
+}
+
 .menu-grid-inner {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
 }
 
 .menu-card {
-  border: 2px solid transparent;
+  border: 1px solid #e2e8e1;
+  border-radius: 11px;
+  overflow: hidden;
+  background: #fff;
   transition: transform 0.15s;
 
   &:hover {
@@ -21,6 +113,90 @@
   &.favorited {
     border-color: #ffcb45;
   }
+}
+
+.menu-card-content {
+  min-height: 235px;
+}
+
+.dish-card-image {
+  position: relative;
+  height: 120px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eadfc9;
+  color: #fff;
+}
+
+.dish-card-image .dish-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  object-fit: cover;
+}
+
+.dish-card-image .dish-emoji {
+  width: 100%;
+  height: 100%;
+  font-size: 0.75rem;
+}
+
+.dish-card-actions {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+}
+
+.favorite-button {
+  box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+}
+
+.dish-card-display > .text-subtitle1,
+.dish-card-display > .text-caption,
+.dish-card-display > .text-h6,
+.dish-card-display > .text-positive,
+.dish-card-display > .text-warning,
+.dish-card-display > .text-negative,
+.dish-card-display > .dish-status-actions {
+  margin-left: 14px;
+  margin-right: 14px;
+}
+
+.dish-card-display > .text-subtitle1 {
+  margin-top: 11px !important;
+}
+
+.dish-card-display > .text-h6 {
+  position: absolute;
+  margin-top: -25px;
+  right: 14px;
+}
+
+.dish-card-display > .text-positive,
+.dish-card-display > .text-warning,
+.dish-card-display > .text-negative {
+  margin-top: 4px;
+}
+
+.dish-card-body {
+  padding: 11px 14px 9px;
+}
+
+.dish-price {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.dish-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 5px;
+}
+
+.dish-status-actions {
+  display: none;
 }
 
 .dish-emoji {
@@ -166,6 +342,16 @@
 }
 
 @media (max-width: 700px) {
+  .menu-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .menu-search,
+  .menu-controls > .col-12,
+  .menu-controls > .q-btn {
+    grid-column: 1 / -1;
+  }
+
   .add-dish-form {
     grid-template-columns: 1fr;
     grid-template-rows: none;
@@ -182,5 +368,17 @@
     height: 180px;
     min-height: 180px;
     justify-self: center;
+  }
+}
+
+@media (min-width: 701px) and (max-width: 950px) {
+  .menu-grid-inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .menu-grid-inner {
+    grid-template-columns: 1fr;
   }
 }

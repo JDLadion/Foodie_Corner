@@ -7,22 +7,21 @@
           <div class="text-h6 app-brand-name">Foodie's Corner</div>
           <div class="text-caption app-brand-tagline">Manage your restaurant's menu with ease</div>
         </q-toolbar-title>
-        <div class="welcome-user">
+        <div
+          class="welcome-user"
+          role="button"
+          tabindex="0"
+          aria-label="Open profile settings"
+          @click="openProfileModal"
+          @keydown.enter.prevent="openProfileModal"
+          @keydown.space.prevent="openProfileModal"
+        >
           <q-avatar size="34px" class="q-mr-sm">
             <img v-if="profile.profile_image" :src="profile.profile_image" alt="Profile image" />
             <q-icon v-else name="person" />
           </q-avatar>
-          <span>Welcome, {{ profile.name || 'User' }}!</span>
+          <span>{{ profile.name || 'User' }}</span>
         </div>
-        <q-btn
-          flat
-          rounded
-          no-caps
-          icon="manage_accounts"
-          label="Edit Profile"
-          class="mobile-toolbar-action"
-          @click="openProfileModal"
-        />
         <q-btn
           flat
           rounded
@@ -184,9 +183,10 @@ async function logout() {
 }
 
 function toggleDark() {
-  Dark.toggle();
+  const isDark = !Dark.isActive;
+  Dark.set(isDark);
   try {
-    localStorage.setItem(DARK_KEY, String(Dark.isActive));
+    localStorage.setItem(DARK_KEY, String(isDark));
   } catch {
     // ignore
   }
@@ -234,6 +234,16 @@ onMounted(() => {
   font-size: 0.95rem;
   font-weight: 600;
   white-space: nowrap;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 4px 6px;
+  transition: background-color 0.2s ease;
+}
+
+.welcome-user:hover,
+.welcome-user:focus-visible {
+  background: rgb(255 255 255 / 16%);
+  outline: none;
 }
 
 .profile-dialog-card {
@@ -243,6 +253,13 @@ onMounted(() => {
 
 .profile-form-section {
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-form-section .q-field {
+  margin: 0;
 }
 
 .profile-image-picker {
