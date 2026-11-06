@@ -1,3 +1,5 @@
 import axios from 'axios';
 
-axios.defaults.baseURL = process.env.API_URL || 'http://localhost:8000/api';
+const api = axios.create({ baseURL: process.env.API_URL });
+
+axios.defaults.baseURL = api.defaults.baseURL;
