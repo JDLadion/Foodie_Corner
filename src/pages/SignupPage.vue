@@ -56,7 +56,7 @@ async function signup() {
   errorMessage.value = '';
 
   try {
-    const response = await axios.post<{ token: string }>('/api/register', {
+    const response = await axios.post<{ token: string }>('/register', {
       name: name.value,
       email: email.value,
       password: password.value,

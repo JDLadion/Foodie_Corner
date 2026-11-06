@@ -107,7 +107,7 @@ function authConfig() {
 
 async function loadProfile() {
   try {
-    const response = await axios.get<Profile>('/api/profile', authConfig());
+    const response = await axios.get<Profile>('/profile', authConfig());
     profile.value = response.data;
   } catch {
     // Keep the menu available if profile loading is temporarily unavailable.
@@ -146,7 +146,7 @@ async function saveProfile() {
   profileSaving.value = true;
   profileError.value = '';
   try {
-    const response = await axios.put<Profile>('/api/profile', profileForm.value, authConfig());
+    const response = await axios.put<Profile>('/profile', profileForm.value, authConfig());
     profile.value = response.data;
     profileModalOpen.value = false;
     Notify.create({ type: 'positive', message: 'Profile updated successfully.' });
@@ -168,7 +168,7 @@ async function logout() {
   try {
     if (token) {
       await axios.post(
-        '/api/logout',
+        '/logout',
         {},
         { headers: { Authorization: 'Bearer ' + token } },
       );

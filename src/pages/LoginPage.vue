@@ -81,7 +81,7 @@ async function login() {
   errorMessage.value = '';
 
   try {
-    const response = await axios.post<{ token: string }>('/api/login', {
+    const response = await axios.post<{ token: string }>('/login', {
       email: email.value,
       password: password.value,
     });

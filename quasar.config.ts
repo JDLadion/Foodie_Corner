@@ -2,13 +2,14 @@ import { defineConfig } from '#q-app'
 
 export default defineConfig(() => {
   return {
-    boot: [],
+    boot: ['axios'],
 
     css: ['app.scss'],
 
     extras: ['roboto-font', 'material-icons'],
 
     build: {
+      env: { API_URL: process.env.API_URL },
       target: {
         browser: ['es2022', 'firefox115', 'chrome115', 'safari14'],
         node: 'node20',

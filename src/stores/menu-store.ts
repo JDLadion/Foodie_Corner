@@ -85,17 +85,17 @@ export const useMenuStore = defineStore('menu', {
         return;
       }
 
-      const response = await axios.get<MenuItem[]>('/api/menu-items', authConfig());
+      const response = await axios.get<MenuItem[]>('/menu-items', authConfig());
       this.items = response.data.map(normalizeItem);
     },
 
     async addItem(data: NewMenuItem) {
-      const response = await axios.post<MenuItem>('/api/menu-items', data, authConfig());
+      const response = await axios.post<MenuItem>('/menu-items', data, authConfig());
       this.items.push(normalizeItem(response.data));
     },
 
     async removeItem(id: number) {
-      await axios.delete('/api/menu-items/' + id, authConfig());
+      await axios.delete('/menu-items/' + id, authConfig());
       this.items = this.items.filter((i) => i.id !== id);
     },
 
@@ -104,7 +104,7 @@ export const useMenuStore = defineStore('menu', {
       if (!item) return;
 
       const response = await axios.put<MenuItem>(
-        '/api/menu-items/' + id,
+        '/menu-items/' + id,
         { ...item, favorite: !item.favorite },
         authConfig(),
       );
@@ -117,7 +117,7 @@ export const useMenuStore = defineStore('menu', {
 
       const stock = item.stock === 'available' ? 'low' : item.stock === 'low' ? 'out' : 'available';
       const response = await axios.put<MenuItem>(
-        '/api/menu-items/' + id,
+        '/menu-items/' + id,
         { ...item, stock },
         authConfig(),
       );
@@ -126,7 +126,7 @@ export const useMenuStore = defineStore('menu', {
 
     async updateItem(updated: MenuItem) {
       const response = await axios.put<MenuItem>(
-        '/api/menu-items/' + updated.id,
+        '/menu-items/' + updated.id,
         updated,
         authConfig(),
       );
