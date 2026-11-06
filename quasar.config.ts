@@ -9,8 +9,10 @@ export default defineConfig(() => {
     extras: ['roboto-font', 'material-icons'],
 
     build: {
-      env: {
-        API_URL: process.env.API_URL ?? 'http://localhost:8000/api',
+      define: {
+        'process.env.API_URL': JSON.stringify(
+          process.env.API_URL ?? 'http://localhost:8000/api',
+        ),
       },
       target: {
         browser: ['es2022', 'firefox115', 'chrome115', 'safari14'],
