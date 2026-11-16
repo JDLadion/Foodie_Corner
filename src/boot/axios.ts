@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({ 
-    baseURL: 'https://backend-k71s.onrender.com/api', 
+    baseURL: 'http://10.0.2.2:8000/api', 
 });
 
 axios.defaults.baseURL = api.defaults.baseURL;
