@@ -12,6 +12,9 @@
     "postinstall": "quasar prepare --silent"
   },
   "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/ios": "^8.6.2",
     "@quasar/extras": "^2.1.0",
     "axios": "^1.20.0",
     "pinia": "^4.0.3",
@@ -20,8 +23,10 @@
     "vue-router": "^5.0.6"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.6.2",
     "@eslint/js": "^10.0.1",
     "@quasar/app-vite": "^3.10.2",
+    "@types/node": "^22.0.0",
     "@vue/eslint-config-prettier": "^10.2.0",
     "autoprefixer": "^10.4.27",
     "eslint": "^10.8.0",
@@ -29,12 +34,11 @@
     "globals": "^17.4.0",
     "postcss": "^8.5.8",
     "prettier": "^3.8.1",
+    "sass-embedded": "^1.80.0",
+    "typescript": "^5.5.0",
     "vite-plugin-checker": "^0.14.5",
     "vue-eslint-parser": "^10.4.0",
-    "typescript": "^5.5.0",
-    "vue-tsc": "^3.0.0",
-    "sass-embedded": "^1.80.0",
-    "@types/node": "^22.0.0"
+    "vue-tsc": "^3.0.0"
   },
   "keywords": [
     "quasar",
